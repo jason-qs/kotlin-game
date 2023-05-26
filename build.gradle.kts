@@ -14,7 +14,7 @@ korge {
 	//targetDefault()
 
 // To selectively enable targets
-
+    supportBox2d()
 	targetJvm()
 	//targetJs()
 	//targetDesktop()

@@ -1,29 +1,43 @@
+
+import com.soywiz.korma.*
 import com.soywiz.klock.*
 import com.soywiz.korev.*
+import com.soywiz.korge.box2d.*
 import com.soywiz.korge.view.*
-import com.soywiz.korim.awt.*
-import com.soywiz.korim.format.*
-import com.soywiz.korio.file.std.*
+import com.soywiz.korim.bitmap.*
+import com.soywiz.korim.color.*
+import com.soywiz.korio.dynamic.*
 import com.soywiz.korma.geom.*
+import com.soywiz.korma.geom.shape.*
+import com.soywiz.korma.geom.vector.*
+import org.jbox2d.dynamics.*
 
 class Game(val stage: Stage, playerImage: Image) {
 
     private fun Key.isPressed(): Boolean = stage.views.input.keys[this]
 
     private var gameOver = false
-    private val player = Player(playerImage)
-
+    private var player = Player(playerImage)
 
     var destination: Point = player.player.pos.copy() as Point
     private val playerSpeed = .50
     private val step = 20
 
+//    val ground =
+//        Rectangle(0, 0, 100, 10)
+//
+//    val ground2 = Shape2d.Rectangle(ground)
 
-    private val stageUpdater = stage.addUpdater { time ->
+//    val circle = Shape2d.Circle()
 
-        if (destination.distanceTo(player.player.pos) > playerSpeed) {
-            moveToDestination()
-        }
+
+   // val test = stage.stage.addChild(ground2)
+
+     private val stageUpdater = stage.addUpdater { time ->
+
+//        if (destination.distanceTo(player.player.pos) > playerSpeed) {
+//            moveToDestination()
+//        }
 
         if(Key.LEFT.isPressed()) {
             moveLeft()
@@ -47,19 +61,19 @@ class Game(val stage: Stage, playerImage: Image) {
     }
 
     private fun moveLeft() {
-        destination.x -= step
+        player.player.x -= step
     }
 
     private fun moveRight() {
-        destination.x += step
+        player.player.x += step
     }
 
     private fun moveDown() {
-        destination.y += step
+        player.player.y += step
     }
 
     private fun moveUp() {
-        destination.y -= step
+        player.player.y -= step
     }
 
     private fun resetDestination() {
@@ -68,8 +82,9 @@ class Game(val stage: Stage, playerImage: Image) {
 
     inner class Player(playerImage: Image){
         val player = with(stage) {
-            playerImage
-
+            playerImage.registerBodyWithFixture(type= BodyType.DYNAMIC, density = 100, friction = 1).hitShape {
+                circle(50,50, 30)
+            }
         }
     }
 }
