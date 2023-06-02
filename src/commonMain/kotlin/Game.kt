@@ -1,16 +1,16 @@
 
-import com.soywiz.korma.*
-import com.soywiz.klock.*
 import com.soywiz.korev.*
 import com.soywiz.korge.box2d.*
+import com.soywiz.korge.ui.*
 import com.soywiz.korge.view.*
-import com.soywiz.korim.bitmap.*
+import com.soywiz.korge.view.camera.*
+import com.soywiz.korge.view.camera.Camera
 import com.soywiz.korim.color.*
-import com.soywiz.korio.dynamic.*
 import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.shape.*
-import com.soywiz.korma.geom.vector.*
+import com.soywiz.korui.*
+import org.jbox2d.collision.shapes.*
 import org.jbox2d.dynamics.*
+import java.awt.SystemColor.text
 
 class Game(val stage: Stage, playerImage: Image) {
 
@@ -23,21 +23,29 @@ class Game(val stage: Stage, playerImage: Image) {
     private val playerSpeed = .50
     private val step = 20
 
-//    val ground =
-//        Rectangle(0, 0, 100, 10)
-//
-//    val ground2 = Shape2d.Rectangle(ground)
+    //val levelClear = UIText(text = "Level Cleared")
 
-//    val circle = Shape2d.Circle()
+    val endFlag = SolidRect(40, 40,Colors.GREEN).xy(1500,346).registerBodyWithFixture(type= BodyType.STATIC)
+    val endFlagCollision = endFlag.onCollision({it==player.player}) {
+        cameraInit.addChild(UIText("Level Cleared").xy(256,256))
+    }
 
 
-   // val test = stage.stage.addChild(ground2)
+
+    private val cameraInit = stage.cameraContainer(512.0, 512.0) {
+        addChild(
+            player.player.apply {
+                xy(256,256)
+            }
+        )
+        addChild(solidRect(20000, 10).xy(0,356).registerBodyWithFixture(type= BodyType.STATIC))
+        addChild(endFlag)
+    }
+    private val cameraFollow = cameraInit.follow(player.player, setImmediately = true)
+
 
      private val stageUpdater = stage.addUpdater { time ->
 
-//        if (destination.distanceTo(player.player.pos) > playerSpeed) {
-//            moveToDestination()
-//        }
 
         if(Key.LEFT.isPressed()) {
             moveLeft()
@@ -78,13 +86,16 @@ class Game(val stage: Stage, playerImage: Image) {
 
     private fun resetDestination() {
         destination.copyFrom(player.player.pos)
+
     }
+
+
 
     inner class Player(playerImage: Image){
         val player = with(stage) {
-            playerImage.registerBodyWithFixture(type= BodyType.DYNAMIC, density = 100, friction = 1).hitShape {
-                circle(50,50, 30)
-            }
+            playerImage.registerBodyWithFixture(type= BodyType.DYNAMIC, density = 100, gravityScale = 4, shape = CircleShape(5))
         }
+
+
     }
 }
